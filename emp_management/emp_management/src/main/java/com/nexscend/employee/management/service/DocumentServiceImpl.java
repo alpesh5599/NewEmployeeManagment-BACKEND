@@ -60,7 +60,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		entity.setType(file.getContentType());
 		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
-		entity.setStatus(Status.ACTIVE.getStatusValue());
+		entity.setStatus(Status.ACTIVE);
 		
 		try {
 			entity.setHash();
@@ -104,7 +104,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		entity.setType(file.getContentType());
 		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
-		entity.setStatus(Status.ACTIVE.getStatusValue());
+		entity.setStatus(Status.ACTIVE);
 		
 		try {
 			entity.setHash();
@@ -147,7 +147,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		entity.setType(file.getContentType());
 		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
-		entity.setStatus(Status.ACTIVE.getStatusValue());
+		entity.setStatus(Status.ACTIVE);
 		
 		try {
 			entity.setHash();

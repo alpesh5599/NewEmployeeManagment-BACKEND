@@ -8,22 +8,31 @@ import org.springframework.stereotype.Component;
 
 import com.nexscend.employee.management.entity.Candidate;
 import com.nexscend.employee.management.utils.CandidateStatus;
+import com.nexscend.employee.management.utils.NotNullField;
+import com.nexscend.employee.management.utils.NotNullValidator;
 
 @Component
 @Configuration
-public class CandidateModel {
+public class CandidateModel extends NotNullValidator {
 
 	private Integer id;
+	@NotNullField(message = "Field1 cannot be null")
 	private String position;
+	@NotNullField(message = "Field1 cannot be null")
 	private String firstName;
+	@NotNullField(message = "Field1 cannot be null")
 	private String lastName;
+	@NotNullField(message = "Field1 cannot be null")
 	private String email;
+	@NotNullField(message = "Field1 cannot be null")
 	private Long contact;
+	@NotNullField(message = "Field1 cannot be null")
 	private String skills;
+	@NotNullField(message = "Field1 cannot be null")
 	private String joining;
 	private String comments;
 	private CandidateStatus candidateStatus;
-
+	
 	private String fileName;
 
 	public void setFileName(String fileName) {

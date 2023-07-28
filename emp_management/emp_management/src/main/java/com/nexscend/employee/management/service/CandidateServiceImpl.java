@@ -49,7 +49,7 @@ public class CandidateServiceImpl implements CandidateService {
 		candidate.setCandidateStatus(CandidateStatus.PENDING);
 
 		candidate.setComments(request.getComments());
-		candidate.setStatus(Status.ACTIVE.getStatusValue());
+		candidate.setStatus(Status.ACTIVE);
 
 		Candidate save = candidateRepository.save(candidate);
 

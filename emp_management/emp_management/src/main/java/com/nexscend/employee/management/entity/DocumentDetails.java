@@ -7,6 +7,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.nexscend.employee.management.utils.Status;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,7 +41,7 @@ public class DocumentDetails {
 	
 //	private String candidateId;
 	
-	private Integer status;
+	private Status status;
 	
 	public static final int RADIX = 16;
 	
@@ -105,11 +107,11 @@ public class DocumentDetails {
 		this.hash = new BigInteger(1, messageDigest.digest()).toString(RADIX);
 	}
 	
-	public Integer getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 

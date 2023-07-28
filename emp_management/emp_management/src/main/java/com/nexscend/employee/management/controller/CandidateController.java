@@ -3,6 +3,8 @@ package com.nexscend.employee.management.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,18 +39,18 @@ public class CandidateController {
 
 	@Autowired
 	ObjectMapper mapper;
-
+	
 	@PostMapping(value = "/save/candidate")
 	public ResponseEntity<Object> saveCandidateData(@RequestParam("candidate") String candidate,
-			@RequestParam("file") MultipartFile file) {
-		// Calling the service
-		CandidateModel readValue = null;
+			@RequestParam("file") MultipartFile file) throws MissingServletRequestPartException {
 		Map<String, String> saveCandidate = null;
 		try {
+		// Calling the service
+		CandidateModel readValue = null;
 			readValue = mapper.readValue(candidate, CandidateModel.class);
 			saveCandidate = candidateService.saveCandidate(readValue, file);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during file upload.");
 		}
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(saveCandidate);

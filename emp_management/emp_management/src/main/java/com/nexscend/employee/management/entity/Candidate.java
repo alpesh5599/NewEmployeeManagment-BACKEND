@@ -1,6 +1,7 @@
 package com.nexscend.employee.management.entity;
 
 import com.nexscend.employee.management.utils.CandidateStatus;
+import com.nexscend.employee.management.utils.Status;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -40,7 +41,8 @@ public class Candidate {
 //	private SetInterview interview;
 	
 	// Status for managing entity in Db.
-	private Integer status;
+	@Enumerated(EnumType.STRING)
+	private Status status;
 
 	public Long getContact() {
 		return contact;
@@ -147,11 +149,11 @@ public class Candidate {
 		this.comments = comments;
 	}
 
-	public Integer getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
