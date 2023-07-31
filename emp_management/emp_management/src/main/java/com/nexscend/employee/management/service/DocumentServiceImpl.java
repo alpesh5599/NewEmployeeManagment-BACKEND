@@ -25,14 +25,14 @@ import com.nexscend.employee.management.utils.Status;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
-	
+
 	Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
 	private final Path fileLocation;
-	
+
 	@Autowired
 	DocumentRepository repository;
-	
+
 	@Autowired
 	public DocumentServiceImpl(DocumentStorageProperty documentStorageProperty) {
 		this.fileLocation = Paths.get(documentStorageProperty.getUploadDirectory()).toAbsolutePath().normalize();
@@ -44,7 +44,7 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	@Override
-	public Map<String, String> saveDocument(MultipartFile file, Candidate id) {
+	public ResponseEntity<Object> saveDocument(MultipartFile file, Candidate id) {
 		DocumentDetails entity = new DocumentDetails();
 
 		if (file == null) {
@@ -59,36 +59,35 @@ public class DocumentServiceImpl implements DocumentService {
 			e.printStackTrace();
 		}
 		entity.setType(file.getContentType());
-		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
+		entity.setSize((double) (DataSize.ofBytes(file.getSize()).toMegabytes()));
 		entity.setStatus(Status.ACTIVE);
-		
+
 		try {
 			entity.setHash();
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
 		}
-		
-		//StoreDocument
+
+		// StoreDocument
 		try {
 			storeDocument(file, entity.getHash());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		
+
 		// Save in DB
-		Map<String, String> response = new HashMap<>();
 		DocumentDetails save = repository.save(entity);
-		if(save.getId() != null) {
-			response.put("response", "Thank You For Applying to Nexscend Technologies");
-		}else {
-			response.put("response", "Please select the valid file type");
+		
+		if (save.getId() != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body("Thank You For Applying to Nexscend Technologies");
+		} else {
+			return ResponseEntity.badRequest().body("Please select the valid file type");
 		}
-	    
-		return response;
+		
 	}
-	
+
 	@Override
-	public Map<String, String> editDocument(MultipartFile file, Integer id){
+	public Map<String, String> editDocument(MultipartFile file, Integer id) {
 		DocumentDetails entity = repository.findById(id).get();
 
 		if (file == null) {
@@ -103,34 +102,34 @@ public class DocumentServiceImpl implements DocumentService {
 			e.printStackTrace();
 		}
 		entity.setType(file.getContentType());
-		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
+		entity.setSize((double) (DataSize.ofBytes(file.getSize()).toMegabytes()));
 		entity.setStatus(Status.ACTIVE);
-		
+
 		try {
 			entity.setHash();
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
 		}
-		
-		//StoreDocument
+
+		// StoreDocument
 		try {
 			storeDocument(file, entity.getHash());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		
+
 		// Update in DB
 		Map<String, String> response = new HashMap<>();
 		DocumentDetails save = repository.save(entity);
-		if(save.getId() != null) {
+		if (save.getId() != null) {
 			response.put("response", "Candidate details are updated...");
-		}else {
+		} else {
 			response.put("response", "Please select the valid file type");
 		}
-	    
+
 		return response;
 	}
-	
+
 	@Override
 	public Map<String, String> saveDocument(MultipartFile file) {
 		DocumentDetails entity = new DocumentDetails();
@@ -146,36 +145,36 @@ public class DocumentServiceImpl implements DocumentService {
 			e.printStackTrace();
 		}
 		entity.setType(file.getContentType());
-		entity.setSize((double)(DataSize.ofBytes(file.getSize()).toMegabytes()));
+		entity.setSize((double) (DataSize.ofBytes(file.getSize()).toMegabytes()));
 		entity.setStatus(Status.ACTIVE);
-		
+
 		try {
 			entity.setHash();
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
 		}
-		
-		//StoreDocument
+
+		// StoreDocument
 		try {
 			storeDocument(file, entity.getHash());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		
+
 		// Save in DB
 		Map<String, String> response = new HashMap<>();
 		DocumentDetails save = repository.save(entity);
-		if(save.getId() != null) {
+		if (save.getId() != null) {
 			response.put("response", "Thank You For Applying to Nexscend Technologies");
-		}else {
+		} else {
 			response.put("response", "Please select the valid file type");
 		}
-	    
+
 		return response;
 	}
-	
+
 	private void storeDocument(MultipartFile file, String hash) throws IOException {
-		
+
 		if (this.fileLocation != null) {
 			logger.info("File save at Location " + this.fileLocation);
 
@@ -192,28 +191,27 @@ public class DocumentServiceImpl implements DocumentService {
 		DocumentDetails file = new DocumentDetails();
 
 		file.setName(uplodedFile.getOriginalFilename());
-		
+
 		try {
 			file.setFileData(uplodedFile.getBytes());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		
+
 		file.setType(uplodedFile.getContentType());
 
 		// Save in DB
 		Map<String, String> response = new HashMap<>();
 		DocumentDetails save = repository.save(file);
-		
-		if(save.getId() != null) {
+
+		if (save.getId() != null) {
 			response.put("response", "File Uploded Succesfully");
-		}else {
+		} else {
 			response.put("response", "Data base  connections issue found");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
-	    
+
 		return response;
 	}
-
 
 }

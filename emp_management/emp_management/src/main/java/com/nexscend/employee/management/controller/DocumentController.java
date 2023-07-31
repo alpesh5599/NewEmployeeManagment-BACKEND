@@ -40,7 +40,7 @@ public class DocumentController {
 					.body(new HashMap<>().put("response", "File is not found"));
 		}
 
-		Map<String, String> saveResume = documentService.saveDocument(file, id);
+		ResponseEntity<Object> saveResume = documentService.saveDocument(file, id);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(saveResume);
 

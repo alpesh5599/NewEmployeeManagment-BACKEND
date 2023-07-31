@@ -2,10 +2,13 @@ package com.nexscend.employee.management.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +23,7 @@ import com.nexscend.employee.management.utils.Status;
 public class CandidateServiceImpl implements CandidateService {
 
 	Logger logger = LoggerFactory.getLogger(CandidateServiceImpl.class);
-
+	
 	@Autowired
 	CandidateRepository candidateRepository;
 
@@ -28,24 +31,59 @@ public class CandidateServiceImpl implements CandidateService {
 	DocumentService documentServices;
 
 	@Override
-	public Map<String, String> saveCandidate(CandidateModel request, MultipartFile file) {
+	public ResponseEntity<Object> saveCandidate(CandidateModel request, MultipartFile file) {
 
 		// For DB Save
 		Candidate candidate = new Candidate();
 
-		Map<String, String> response = null;
-
 		if (request == null) {
 			logger.error("Requested Model Are Not found...");
+			return ResponseEntity.badRequest().body("Request cannot be empty");
 		}
 
-		candidate.setPosition(request.getPosition());
-		candidate.setFirstName(request.getFirstName());
-		candidate.setLastName(request.getLastName());
-		candidate.setEmail(request.getEmail());
-		candidate.setContect(request.getContact());
-		candidate.setSkills(request.getSkills());
-		candidate.setJoining(request.getJoining());
+		if (request.getFirstName() != null && !request.getFirstName().trim().isEmpty()) {
+			candidate.setFirstName(request.getFirstName());
+		} else {
+			return ResponseEntity.badRequest().body("First Name cannot be empty");
+		}
+
+		if (request.getLastName() != null && !request.getLastName().trim().isEmpty()) {
+			candidate.setLastName(request.getLastName());
+		} else {
+			return ResponseEntity.badRequest().body("Last Name cannot be empty");
+		}
+
+		if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+			candidate.setEmail(request.getEmail());
+		} else {
+			return ResponseEntity.badRequest().body("Email cannot be empty");
+		}
+
+		if (request.getContact() != null && isValidMobileNumber(request.getContact().toString())) {
+			candidate.setContect(request.getContact());
+		} else {
+			return ResponseEntity.badRequest().body("Contect cannot be empty");
+		}
+
+		
+		if (request.getJoining() != null && !request.getJoining().trim().isEmpty()) {
+			candidate.setJoining(request.getJoining());
+		} else {
+			return ResponseEntity.badRequest().body("Joining Avability cannot be empty");
+		}
+		
+		if (request.getPosition() != null && !request.getPosition().trim().isEmpty()) {
+			candidate.setPosition(request.getPosition());
+		} else {
+			return ResponseEntity.badRequest().body("Position cannot be empty");
+		}
+		
+		if (request.getSkills() != null && !request.getSkills().trim().isEmpty()) {
+			candidate.setSkills(request.getSkills());
+		} else {
+			return ResponseEntity.badRequest().body("Skills cannot be empty");
+		}
+		
 		candidate.setCandidateStatus(CandidateStatus.PENDING);
 
 		candidate.setComments(request.getComments());
@@ -54,10 +92,9 @@ public class CandidateServiceImpl implements CandidateService {
 		Candidate save = candidateRepository.save(candidate);
 
 		if (file != null) {
-			response = documentServices.saveDocument(file, save);
+			return documentServices.saveDocument(file, save);
 		}
-
-		return response;
+		return ResponseEntity.accepted().body("Thank You For Applying to Nexscend Technologies");
 	}
 
 	@Override
@@ -94,8 +131,8 @@ public class CandidateServiceImpl implements CandidateService {
 		candidateEntity.setJoining(candidateModel.getJoining());
 		candidateEntity.setComments(candidateModel.getComments());
 		candidateEntity.setCandidateStatus(candidateModel.getCandidateStatus());
-		
-		//Update object in DB
+
+		// Update object in DB
 		candidateRepository.save(candidateEntity);
 
 		Map<String, String> response = null;
@@ -105,5 +142,19 @@ public class CandidateServiceImpl implements CandidateService {
 
 		return response;
 	}
+	
+	public static boolean isValidMobileNumber(String mobileNumber) {
+		
+		String patterns 
+	    = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$" 
+	    + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$" 
+	    + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
+		
+		
+        Pattern pattern = Pattern.compile(patterns);
+        Matcher matcher = pattern.matcher(mobileNumber);
+
+        return matcher.matches();
+    }
 
 }

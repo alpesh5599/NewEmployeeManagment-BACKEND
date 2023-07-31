@@ -1,4 +1,4 @@
-package com.nexscend.employee.management.customException;
+package com.nexscend.employee.management.custom;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
