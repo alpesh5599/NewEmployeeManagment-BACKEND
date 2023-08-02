@@ -1,5 +1,7 @@
 package com.nexscend.employee.management.model;
 
+import java.util.Date;
+
 public interface CandidatewithFileModel {
 
 	public Integer getId();
@@ -27,5 +29,7 @@ public interface CandidatewithFileModel {
 	public String getType();
 	
 	public String getCandidateStatus();
+	
+	public Date getApplicationDate();
 	
 }

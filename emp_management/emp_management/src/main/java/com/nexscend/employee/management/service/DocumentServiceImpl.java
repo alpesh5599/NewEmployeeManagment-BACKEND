@@ -21,6 +21,7 @@ import com.nexscend.employee.management.entity.Candidate;
 import com.nexscend.employee.management.entity.DocumentDetails;
 import com.nexscend.employee.management.property.DocumentStorageProperty;
 import com.nexscend.employee.management.repository.DocumentRepository;
+import com.nexscend.employee.management.utils.ResponseBean;
 import com.nexscend.employee.management.utils.Status;
 
 @Service
@@ -44,7 +45,7 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	@Override
-	public ResponseEntity<Object> saveDocument(MultipartFile file, Candidate id) {
+	public ResponseBean saveDocument(MultipartFile file, Candidate id) {
 		DocumentDetails entity = new DocumentDetails();
 
 		if (file == null) {
@@ -79,15 +80,15 @@ public class DocumentServiceImpl implements DocumentService {
 		DocumentDetails save = repository.save(entity);
 		
 		if (save.getId() != null) {
-			return ResponseEntity.status(HttpStatus.CREATED).body("Thank You For Applying to Nexscend Technologies");
+			return ResponseBean.generateResponse(HttpStatus.CREATED,"Thank You For Applying to Nexscend Technologies");
 		} else {
-			return ResponseEntity.badRequest().body("Please select the valid file type");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Please select the valid file type");
 		}
 		
 	}
 
 	@Override
-	public Map<String, String> editDocument(MultipartFile file, Integer id) {
+	public ResponseBean editDocument(MultipartFile file, Integer id) {
 		DocumentDetails entity = repository.findById(id).get();
 
 		if (file == null) {
@@ -119,15 +120,12 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 
 		// Update in DB
-		Map<String, String> response = new HashMap<>();
 		DocumentDetails save = repository.save(entity);
 		if (save.getId() != null) {
-			response.put("response", "Candidate details are updated...");
+			return ResponseBean.generateResponse(HttpStatus.ACCEPTED, "Candidate update succesfully");
 		} else {
-			response.put("response", "Please select the valid file type");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Please select the valid file type");
 		}
-
-		return response;
 	}
 
 	@Override

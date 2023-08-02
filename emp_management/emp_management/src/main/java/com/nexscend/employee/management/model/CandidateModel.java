@@ -1,6 +1,7 @@
 package com.nexscend.employee.management.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,53 @@ public class CandidateModel extends NotNullValidator {
 	private String joining;
 	private String comments;
 	private CandidateStatus candidateStatus;
-	
+
+	private Date applicationDate;
+	private Date createdDate;
+	private String createdBy;
+	private Date modifiedDate;
+	private String modifiedBy;
+
+	public Date getApplicationDate() {
+		return applicationDate;
+	}
+
+	public void setApplicationDate(Date applicationDate) {
+		this.applicationDate = applicationDate;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 	private String fileName;
 
 	public void setFileName(String fileName) {
@@ -127,13 +174,15 @@ public class CandidateModel extends NotNullValidator {
 	public String toString() {
 		return "CandidateModel [id=" + id + ", position=" + position + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", email=" + email + ", contact=" + contact + ", skills=" + skills + ", joining=" + joining
-				+ ", comments=" + comments + ", fileName=" + fileName + "]";
+				+ ", comments=" + comments + ", candidateStatus=" + candidateStatus + ", applicationDate="
+				+ applicationDate + ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", modifiedDate="
+				+ modifiedDate + ", modifiedBy=" + modifiedBy + ", fileName=" + fileName + "]";
 	}
 
 	public static List<CandidateModel> map(List<Candidate> candidateList) {
 
 		List<CandidateModel> response = new ArrayList<CandidateModel>();
-		
+
 		candidateList.forEach(ref -> {
 			CandidateModel c_Model = new CandidateModel();
 
@@ -146,6 +195,11 @@ public class CandidateModel extends NotNullValidator {
 			c_Model.setSkills(ref.getSkills());
 			c_Model.setJoining(ref.getJoining());
 			c_Model.setCandidateStatus(ref.getCandidateStatus());
+			c_Model.setApplicationDate(ref.getApplicationDate());
+			c_Model.setCreatedDate(ref.getCreatedDate());
+			c_Model.setCreatedBy(ref.getCreatedBy());
+			c_Model.setModifiedBy(ref.getModifiedBy());
+			c_Model.setModifiedDate(ref.getModifiedDate());
 
 			response.add(c_Model);
 		});

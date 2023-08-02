@@ -1,18 +1,15 @@
 package com.nexscend.employee.management.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexscend.employee.management.model.CandidateModel;
 import com.nexscend.employee.management.model.CandidatewithFileModel;
 import com.nexscend.employee.management.service.CandidateService;
+import com.nexscend.employee.management.utils.ResponseBean;
 
 @RestController
 @RequestMapping("candidate")
@@ -37,20 +35,23 @@ public class CandidateController {
 
 	@Autowired
 	ObjectMapper objectMapper;
-	
-	@PostMapping(value = "add")
-	public ResponseEntity<Object> saveCandidateData(@RequestParam("candidate") String candidate,
-			@RequestParam("file") MultipartFile file) throws MissingServletRequestPartException {
-		try {
-			// Calling the service
-			CandidateModel readValue = null;
-			readValue = objectMapper.readValue(candidate, CandidateModel.class);
 
-			return candidateService.saveCandidate(readValue, file);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("An error occurred during file upload.");
+	@PostMapping(value = "add")
+	public ResponseBean saveCandidateData(@RequestParam("candidate") String candidate,
+			@RequestParam("file") MultipartFile file) throws MissingServletRequestPartException {
+		// Calling the service
+		CandidateModel readValue = null;
+		try {
+			readValue = objectMapper.readValue(candidate, CandidateModel.class);
+			if (readValue.getId() != null) {
+				return candidateService.editCandidateDetails(file, readValue, readValue.getId());
+			} else {
+				return candidateService.saveCandidate(readValue, file);
+			}
+		} catch (JsonProcessingException e) {
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Json Parse error", readValue);
 		}
+
 	}
 
 	@GetMapping("getAll")
@@ -61,25 +62,12 @@ public class CandidateController {
 
 	@GetMapping("/getFile")
 	public List<CandidatewithFileModel> getFiles() {
-
 		return candidateService.getFile();
 	}
 
-	@PutMapping("/editCandidate/{id}")
-	public ResponseEntity<Object> updateCandidateDetails(@RequestParam("file") MultipartFile file,
-			@RequestParam("candidate") String candidate, @PathVariable("id") Integer id) {
-		logger.info("updating details of candidate...");
-
-		CandidateModel readValue = null;
-		Map<String, String> editCandidate = null;
-		try {
-			readValue = objectMapper.readValue(candidate, CandidateModel.class);
-			editCandidate = candidateService.editCandidateDetails(file, readValue, id);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-		return ResponseEntity.status(HttpStatus.OK).body(editCandidate);
+	@GetMapping("/getById/{id}")
+	public ResponseBean getCandidateById(@PathVariable("id") Integer id) {
+		logger.info("Candidate by Id.");
+		return candidateService.getCandidateById(id);
 	}
-
 }

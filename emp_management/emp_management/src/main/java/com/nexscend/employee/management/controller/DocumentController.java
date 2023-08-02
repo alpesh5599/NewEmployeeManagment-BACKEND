@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.nexscend.employee.management.entity.Candidate;
 import com.nexscend.employee.management.service.DocumentService;
+import com.nexscend.employee.management.utils.ResponseBean;
 
 @RestController
 @RequestMapping("api/document")
@@ -33,17 +34,15 @@ public class DocumentController {
 	DocumentService documentService;
 
 	@PostMapping("file/upload")
-	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file, @RequestParam("id") Candidate id) {
+	public ResponseBean upload(@RequestParam("file") MultipartFile file, @RequestParam("id") Candidate id) {
 
 		if (file.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new HashMap<>().put("response", "File is not found"));
+			return ResponseBean.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, "File is not found");
 		}
 
-		ResponseEntity<Object> saveResume = documentService.saveDocument(file, id);
+		ResponseBean saveResume = documentService.saveDocument(file, id);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(saveResume);
-
+		return ResponseBean.generateResponse(HttpStatus.CREATED, saveResume);
 	}
 
 	@PostMapping("addFiles")

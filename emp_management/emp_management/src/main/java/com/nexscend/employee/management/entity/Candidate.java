@@ -1,5 +1,8 @@
 package com.nexscend.employee.management.entity;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nexscend.employee.management.utils.CandidateStatus;
 import com.nexscend.employee.management.utils.Status;
 
@@ -16,7 +19,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "candidate")
 public class Candidate {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -26,23 +29,30 @@ public class Candidate {
 	private String email;
 	private Long contact;
 	private String skills;
-	
+
 	@Enumerated(EnumType.STRING)
 	private CandidateStatus candidateStatus;
-	
+
 	// Here is the Avaibility of Joining....
 	private String joining;
 	private String comments;
-	
+
 	@OneToOne(mappedBy = "candidateId", cascade = CascadeType.ALL)
-    private DocumentDetails document;
-	
+	@JsonIgnore
+	private DocumentDetails document;
+
 //	@OneToOne(mappedBy = "candidateId", cascade = CascadeType.ALL)
 //	private SetInterview interview;
-	
+
 	// Status for managing entity in Db.
 	@Enumerated(EnumType.STRING)
 	private Status status;
+
+	private Date applicationDate;
+	private Date createdDate;
+	private String createdBy;
+	private Date modifiedDate;
+	private String modifiedBy;
 
 	public Long getContact() {
 		return contact;
@@ -68,7 +78,6 @@ public class Candidate {
 //		this.interview = interview;
 //	}
 
-	
 	public CandidateStatus getCandidateStatus() {
 		return candidateStatus;
 	}
@@ -157,11 +166,52 @@ public class Candidate {
 		this.status = status;
 	}
 
+	public Date getApplicationDate() {
+		return applicationDate;
+	}
+
+	public void setApplicationDate(Date applicationDate) {
+		this.applicationDate = applicationDate;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
 	@Override
 	public String toString() {
 		return "Candidate [id=" + id + ", position=" + position + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", email=" + email + ", contact=" + contact + ", skills=" + skills + ", candidateStatus="
 				+ candidateStatus + ", joining=" + joining + ", comments=" + comments + ", document=" + document
-				 + ", status=" + status + "]";
+				+ ", status=" + status + ", applicationDate=" + applicationDate + ", createdDate=" + createdDate
+				+ ", createdBy=" + createdBy + ", modifiedDate=" + modifiedDate + ", modifiedBy=" + modifiedBy + "]";
 	}
 }
