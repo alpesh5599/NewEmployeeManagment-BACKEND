@@ -1,5 +1,6 @@
 package com.nexscend.employee.management.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nexscend.employee.management.entity.Candidate;
+import com.nexscend.employee.management.entity.DocumentDetails;
 import com.nexscend.employee.management.model.CandidateModel;
 import com.nexscend.employee.management.model.CandidatewithFileModel;
+import com.nexscend.employee.management.model.CandidatewithFileModel2;
 import com.nexscend.employee.management.repository.CandidateRepository;
 import com.nexscend.employee.management.utils.CandidateStatus;
 import com.nexscend.employee.management.utils.ResponseBean;
@@ -25,7 +28,7 @@ import com.nexscend.employee.management.utils.Status;
 public class CandidateServiceImpl implements CandidateService {
 
 	Logger logger = LoggerFactory.getLogger(CandidateServiceImpl.class);
-	
+
 	@Autowired
 	CandidateRepository candidateRepository;
 
@@ -40,7 +43,7 @@ public class CandidateServiceImpl implements CandidateService {
 
 		if (request == null) {
 			logger.error("Requested Model Are Not found...");
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Request cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Request cannot be empty");
 		}
 
 		if (request.getFirstName() != null && !request.getFirstName().trim().isEmpty()) {
@@ -52,45 +55,44 @@ public class CandidateServiceImpl implements CandidateService {
 		if (request.getLastName() != null && !request.getLastName().trim().isEmpty()) {
 			candidate.setLastName(request.getLastName());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Last Name cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Last Name cannot be empty");
 		}
 
 		if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
 			candidate.setEmail(request.getEmail());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Email cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Email cannot be empty");
 		}
 
 		if (request.getContact() != null && isValidMobileNumber(request.getContact().toString())) {
 			candidate.setContect(request.getContact());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Contect cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Contect cannot be empty");
 		}
 
-		
 		if (request.getJoining() != null && !request.getJoining().trim().isEmpty()) {
 			candidate.setJoining(request.getJoining());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Joining Avability cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Joining Avability cannot be empty");
 		}
-		
+
 		if (request.getPosition() != null && !request.getPosition().trim().isEmpty()) {
 			candidate.setPosition(request.getPosition());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Position cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Position cannot be empty");
 		}
-		
+
 		if (request.getSkills() != null && !request.getSkills().trim().isEmpty()) {
 			candidate.setSkills(request.getSkills());
 		} else {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST,"Skills cannot be empty");
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Skills cannot be empty");
 		}
-		
+
 		candidate.setCandidateStatus(CandidateStatus.PENDING);
 
 		candidate.setApplicationDate(new Date());
 		candidate.setCreatedDate(new Date());
-		
+
 		candidate.setComments(request.getComments());
 		candidate.setStatus(Status.ACTIVE);
 
@@ -99,7 +101,7 @@ public class CandidateServiceImpl implements CandidateService {
 		if (file != null) {
 			return documentServices.saveDocument(file, save);
 		}
-		return ResponseBean.generateResponse(HttpStatus.ACCEPTED,"Thank You For Applying to Nexscend Technologies");
+		return ResponseBean.generateResponse(HttpStatus.ACCEPTED, "Thank You For Applying to Nexscend Technologies");
 	}
 
 	@Override
@@ -118,36 +120,36 @@ public class CandidateServiceImpl implements CandidateService {
 	@Override
 	public ResponseBean editCandidateDetails(MultipartFile file, CandidateModel candidateModel, Integer id) {
 		Candidate candidateEntity = candidateRepository.findById(id).get();
-		
-		if(candidateModel.getPosition() != null) {
+
+		if (candidateModel.getPosition() != null) {
 			candidateEntity.setPosition(candidateModel.getPosition());
 		}
-		if(candidateModel.getFirstName() != null) {
+		if (candidateModel.getFirstName() != null) {
 			candidateEntity.setFirstName(candidateModel.getFirstName());
 		}
-		if(candidateModel.getLastName() != null) {
+		if (candidateModel.getLastName() != null) {
 			candidateEntity.setLastName(candidateModel.getLastName());
 		}
-		if(candidateModel.getEmail() != null) {
+		if (candidateModel.getEmail() != null) {
 			candidateEntity.setEmail(candidateModel.getEmail());
 		}
-		if(candidateModel.getContact() != null) {
+		if (candidateModel.getContact() != null) {
 			candidateEntity.setContect(candidateModel.getContact());
 		}
-		if(candidateModel.getSkills() != null) {
+		if (candidateModel.getSkills() != null) {
 			candidateEntity.setSkills(candidateModel.getSkills());
 		}
-		if(candidateModel.getJoining() != null) {
+		if (candidateModel.getJoining() != null) {
 			candidateEntity.setJoining(candidateModel.getJoining());
 		}
-		
-		if(candidateModel.getCandidateStatus() != null) {
+
+		if (candidateModel.getCandidateStatus() != null) {
 			candidateEntity.setCandidateStatus(candidateModel.getCandidateStatus());
 		}
-		
+
 		candidateEntity.setComments(candidateModel.getComments());
 		candidateEntity.setModifiedDate(new Date());
-		
+
 		// Update object in DB
 		candidateRepository.save(candidateEntity);
 
@@ -158,29 +160,53 @@ public class CandidateServiceImpl implements CandidateService {
 
 		return response;
 	}
-	
-	public static boolean isValidMobileNumber(String mobileNumber) {
-		
-		String patterns 
-	    = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$" 
-	    + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$" 
-	    + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
-		
-		
-        Pattern pattern = Pattern.compile(patterns);
-        Matcher matcher = pattern.matcher(mobileNumber);
 
-        return matcher.matches();
-    }
+	public static boolean isValidMobileNumber(String mobileNumber) {
+
+		String patterns = "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$"
+				+ "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$"
+				+ "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
+
+		Pattern pattern = Pattern.compile(patterns);
+		Matcher matcher = pattern.matcher(mobileNumber);
+
+		return matcher.matches();
+	}
 
 	@Override
 	public ResponseBean getCandidateById(Integer id) {
 		Optional<Candidate> candidate = candidateRepository.findById(id);
-		if(!candidate.isPresent()) {
+		if (!candidate.isPresent()) {
 			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "candidate not found");
 		}
-		
+
 		return ResponseBean.generateResponse(HttpStatus.OK, candidate);
+	}
+
+	@Override
+	public ResponseBean getCandidates() {
+		List<Candidate> candidateList = candidateRepository.findAll();
+		CandidatewithFileModel2 model = new CandidatewithFileModel2();
+
+		if (candidateList.isEmpty()) {
+			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Candidate not found");
+		}
+
+		DocumentDetails document = null;
+		for (Candidate candidate : candidateList) {
+			document = documentServices.findDocumentByCandidateId(candidate.getId());
+
+			if (candidate != null && document != null) {
+				try {
+					model.setFirstName(candidate.getFirstName());
+					model.setResource(documentServices.getFile(document.getName()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return ResponseBean.generateResponse(HttpStatus.ACCEPTED, model);
 	}
 
 }

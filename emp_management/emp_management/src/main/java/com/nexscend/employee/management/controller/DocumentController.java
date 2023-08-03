@@ -1,5 +1,6 @@
 package com.nexscend.employee.management.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,7 +71,6 @@ public class DocumentController {
 				documentService.saveDocument(multipartFile);
 				filesNames.add(multipartFile.getOriginalFilename());
 			} else {
-//				totalSize += multipartFile.getSize();
 				exceedFilesNames.add(multipartFile.getOriginalFilename());
 			}
 		}
@@ -84,11 +86,6 @@ public class DocumentController {
 					+ String.join(", ", exceedFilesNames);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
 		}
-
-//		files.stream().forEach(file -> {
-//			documentService.saveDocument(file);
-//			fileNames.add(file.getOriginalFilename());
-//		});
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("Uploaded the files successfully:" + filesNames);
 
@@ -108,19 +105,11 @@ public class DocumentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(saveResume);
 
 	}
+	
+	@GetMapping("download/{fileName}")
+	ResponseEntity<org.springframework.core.io.Resource> downloadFile(@PathVariable("fileName") String fileName) throws IOException{
+		return documentService.getFile(fileName);
+		
+	}
 
-//	@PostMapping("addMultipleFile")
-//	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file){
-//		
-//		if (file.isEmpty()) {
-//			Map<String, String> responseMap= new HashMap<String,String>();
-//			responseMap.put("response", "No file hasbeen chosen or chosen file has no content");
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
-//		}
-//		
-//		Object saveResume = fileService.saveFile(file);
-//		
-//		return ResponseEntity.status(HttpStatus.CREATED).body(saveResume);
-//		
-//	}
 }

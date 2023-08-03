@@ -19,7 +19,7 @@ public class SetInterview {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@Column(name = "interviewerName")
-	private String name;
+	private String interviewerName;
 	private LocalDateTime dateTime;
 	private String outCome;
 	private String feedback;
@@ -44,12 +44,12 @@ public class SetInterview {
 		this.candidateId = candidateId;
 	}
 
-	public String getName() {
-		return name;
+	public String getInterviewerName() {
+		return interviewerName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setInterviewerName(String interviewerName) {
+		this.interviewerName = interviewerName;
 	}
 
 	public LocalDateTime getDateTime() {
@@ -78,8 +78,8 @@ public class SetInterview {
 
 	@Override
 	public String toString() {
-		return "SetInterview [id=" + id + ", name=" + name + ", dateTime=" + dateTime + ", outCome=" + outCome
-				+ ", feedback=" + feedback + "]";
+		return "SetInterview [id=" + id + ", interviewerName=" + interviewerName + ", dateTime=" + dateTime
+				+ ", outCome=" + outCome + ", feedback=" + feedback + ", candidateId=" + candidateId + "]";
 	}
 
 }

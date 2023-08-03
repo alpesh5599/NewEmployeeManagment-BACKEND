@@ -1,17 +1,25 @@
 package com.nexscend.employee.management.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
@@ -30,6 +38,8 @@ public class DocumentServiceImpl implements DocumentService {
 	Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
 	private final Path fileLocation;
+	
+	private final Path fileSaveLocation;
 
 	@Autowired
 	DocumentRepository repository;
@@ -37,8 +47,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Autowired
 	public DocumentServiceImpl(DocumentStorageProperty documentStorageProperty) {
 		this.fileLocation = Paths.get(documentStorageProperty.getUploadDirectory()).toAbsolutePath().normalize();
+		this.fileSaveLocation = Paths.get(documentStorageProperty.getSaveDirectory()).toAbsolutePath().normalize();
 		try {
 			Files.createDirectories(this.fileLocation);
+			Files.createDirectories(this.fileSaveLocation);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -178,6 +190,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 			Path targetLocation = this.fileLocation.resolve(hash);
 			Files.copy(file.getInputStream(), targetLocation);
+			Files.copy(file.getInputStream(), this.fileSaveLocation.resolve(file.getOriginalFilename()));
 		} else {
 			logger.info("File is not saved in local system, because not provided the path in property file");
 		}
@@ -210,6 +223,38 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 
 		return response;
+	}
+
+	@Override
+	public ResponseEntity<Resource> getFile(String fileName) throws IOException {
+		
+		Path filePath = this.fileSaveLocation.toAbsolutePath().normalize().resolve(fileName);
+//		if(!Files.exists(filePath)) {
+//			throw new FileNotFoundException("File Not Found Exception");
+//		}
+		
+		
+		Resource urlResource = null;
+		try {
+			urlResource = new UrlResource(filePath.toUri());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("file-Name", fileName);
+		httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name="+fileName);
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath))).headers(httpHeaders).body(urlResource);
+	}
+
+	@Override
+	public DocumentDetails findDocumentByCandidateId(Integer id) {
+		Optional<DocumentDetails> documentDetails = repository.findById(id);
+		
+		if(documentDetails.isPresent()) {
+			return documentDetails.get();
+		}
+		
+		return null;
 	}
 
 }

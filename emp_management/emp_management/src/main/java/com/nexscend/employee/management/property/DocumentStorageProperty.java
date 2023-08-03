@@ -8,6 +8,17 @@ public class DocumentStorageProperty {
 	
 	@Value("${document.uploadDirectory}")
 	private String uploadDirectory;
+	
+	@Value("${document.saveDirectory}")
+	private String saveDirectory;
+	
+	public String getSaveDirectory() {
+		return saveDirectory;
+	}
+
+	public void setSaveDirectory(String saveDirectory) {
+		this.saveDirectory = saveDirectory;
+	}
 
 	public String getUploadDirectory() {
 		return uploadDirectory;

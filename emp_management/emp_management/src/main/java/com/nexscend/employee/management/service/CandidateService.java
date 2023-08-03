@@ -19,4 +19,6 @@ public interface CandidateService {
 	List<CandidatewithFileModel> getFile();
 	
 	ResponseBean getCandidateById(Integer id);
+	
+	ResponseBean getCandidates();
 }

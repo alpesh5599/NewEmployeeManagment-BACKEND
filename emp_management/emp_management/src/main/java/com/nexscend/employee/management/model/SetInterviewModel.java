@@ -82,7 +82,7 @@ public class SetInterviewModel {
 			SetInterviewModel model = new SetInterviewModel();
 
 			model.setId(i.getId());
-			model.setInterviewerName(i.getName());
+			model.setInterviewerName(i.getInterviewerName());
 			model.setInterviewDateTime(i.getDateTime());
 			model.setInterviewOutCome(i.getOutCome());
 			model.setFeedback(i.getFeedback());

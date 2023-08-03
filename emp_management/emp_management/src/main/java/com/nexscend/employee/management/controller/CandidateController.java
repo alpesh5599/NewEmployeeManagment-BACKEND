@@ -59,6 +59,12 @@ public class CandidateController {
 		logger.info("Fetching All Candidate Details...");
 		return candidateService.getFile();
 	}
+	
+	@GetMapping("getAll1")
+	public ResponseBean getAllCandidates() {
+		logger.info("Fetching All Candidate Details...");
+		return candidateService.getCandidates();
+	}
 
 	@GetMapping("/getFile")
 	public List<CandidatewithFileModel> getFiles() {

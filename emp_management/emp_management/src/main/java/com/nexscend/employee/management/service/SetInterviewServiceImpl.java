@@ -23,7 +23,7 @@ public class SetInterviewServiceImpl implements SetInterviewService {
 		
 		SetInterview entity = new SetInterview();
 		
-		entity.setName(interviewModel.getInterviewerName());
+		entity.setInterviewerName(interviewModel.getInterviewerName());
 		entity.setDateTime(interviewModel.getInterviewDateTime());
 		entity.setOutCome(interviewModel.getInterviewOutCome());
 		entity.setFeedback(interviewModel.getFeedback());

@@ -16,13 +16,13 @@ public interface InterviewwithCandidate {
 
 	public byte[] getFileData();
 
-//	public String getName();
+	public String getName();
 	
 	public String getType();
 	
 	public Integer getId();
 	
-	public String getName();
+	public String getInterviewerName();
 	
 	public LocalDateTime getDateTime();
 }
