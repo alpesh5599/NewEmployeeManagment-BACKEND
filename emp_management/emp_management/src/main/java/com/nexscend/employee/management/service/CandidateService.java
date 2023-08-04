@@ -20,5 +20,4 @@ public interface CandidateService {
 	
 	ResponseBean getCandidateById(Integer id);
 	
-	ResponseBean getCandidates();
 }

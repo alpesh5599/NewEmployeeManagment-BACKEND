@@ -1,6 +1,5 @@
 package com.nexscend.employee.management.service;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nexscend.employee.management.entity.Candidate;
-import com.nexscend.employee.management.entity.DocumentDetails;
 import com.nexscend.employee.management.model.CandidateModel;
 import com.nexscend.employee.management.model.CandidatewithFileModel;
-import com.nexscend.employee.management.model.CandidatewithFileModel2;
 import com.nexscend.employee.management.repository.CandidateRepository;
 import com.nexscend.employee.management.utils.CandidateStatus;
 import com.nexscend.employee.management.utils.ResponseBean;
@@ -181,32 +178,6 @@ public class CandidateServiceImpl implements CandidateService {
 		}
 
 		return ResponseBean.generateResponse(HttpStatus.OK, candidate);
-	}
-
-	@Override
-	public ResponseBean getCandidates() {
-		List<Candidate> candidateList = candidateRepository.findAll();
-		CandidatewithFileModel2 model = new CandidatewithFileModel2();
-
-		if (candidateList.isEmpty()) {
-			return ResponseBean.generateResponse(HttpStatus.BAD_REQUEST, "Candidate not found");
-		}
-
-		DocumentDetails document = null;
-		for (Candidate candidate : candidateList) {
-			document = documentServices.findDocumentByCandidateId(candidate.getId());
-
-			if (candidate != null && document != null) {
-				try {
-					model.setFirstName(candidate.getFirstName());
-					model.setResource(documentServices.getFile(document.getName()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return ResponseBean.generateResponse(HttpStatus.ACCEPTED, model);
 	}
 
 }

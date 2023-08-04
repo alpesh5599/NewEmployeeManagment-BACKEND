@@ -243,6 +243,7 @@ public class DocumentServiceImpl implements DocumentService {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("file-Name", fileName);
 		httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;File-Name="+fileName);
+		
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath))).headers(httpHeaders).body(urlResource);
 	}
 
